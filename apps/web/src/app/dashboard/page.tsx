@@ -4,7 +4,7 @@ import React from "react";
 
 type Props = {};
 
-const Callback: React.FC<Props> = async ({}) => {
+const Dashboard: React.FC<Props> = async ({}) => {
   const auth = await authenticateUser();
 
   if ([200, 201].includes(auth.status)) {
@@ -15,7 +15,7 @@ const Callback: React.FC<Props> = async ({}) => {
     return redirect("/auth/sign-in");
   }
 
-  return <div>Callback</div>;
+  return <div>Dashboard</div>;
 };
 
-export default Callback;
+export default Dashboard;
