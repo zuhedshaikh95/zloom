@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import Providers from "@/providers";
 
 const manrope = Manrope({ subsets: ["latin"] });
 
@@ -23,7 +24,7 @@ export default function RootLayout({
         <body className={`${manrope.className} bg-[#171717] antialiased`}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
             <Toaster />
-            {children}
+            <Providers>{children}</Providers>
           </ThemeProvider>
         </body>
       </html>
