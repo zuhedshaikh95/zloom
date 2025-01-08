@@ -1,0 +1,35 @@
+import { SUBSCRIPTION_PLAN } from "@prisma/client";
+
+export enum QueryKeysE {
+  WORKSPACE_VIDEOS = "workspace-videos",
+  WORKSPACES = "workspaces",
+  WORKSPACE_FOLDERS = "workspace-folders",
+  NOTIFICATIONS = "notifications",
+  USERS = "users",
+  FOLDER_INFO = "folder-info",
+  PREVIEW_VIDEO = "preview-video",
+  USER_PROFILE = "user-profile",
+  VIDEO_COMMENTS = "video-comments",
+}
+
+export enum MutationKeysE {
+  CREATE_FOLDER = "create-folder",
+  CREATE_WORKSPACE = "create-workspace",
+  RENAME_FOLDER = "rename-folder",
+  CHANGE_VIDEO_LOCATION = "change-video-location",
+  ENABLE_FIRSTVIEW = "enable-firstview",
+  NEW_COMMENT = "new-comment",
+  INVITE_MEMBER = "invite-member",
+  CREATE_SUBSCRIPTION = "create-subscription",
+}
+
+export type SearchUsersT = {
+  subscription: {
+    plan: SUBSCRIPTION_PLAN;
+  } | null;
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  image: string | null;
+};
