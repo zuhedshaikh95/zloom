@@ -1,4 +1,4 @@
-import { Loader } from "@/components";
+import { Loader } from "@/components/global";
 import React from "react";
 
 type Props = {};
