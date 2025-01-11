@@ -4,7 +4,7 @@ import { getWorkspacesFolders } from "@/actions/workspace";
 import { Folder } from "@/components/folder";
 import { useQueryData } from "@/hooks";
 import { setFolders } from "@/redux/features/folders.slice";
-import { AppDispatch, MutationKeysE, QueryKeysE } from "@/types";
+import { AppDispatchT, MutationKeysE, QueryKeysE } from "@/types";
 import { Folder as FolderT } from "@prisma/client";
 import { MutationStatus, useMutationState } from "@tanstack/react-query";
 import { ArrowRight, Folders } from "lucide-react";
@@ -16,7 +16,7 @@ type Props = {
 };
 
 const MyFolders: React.FC<Props> = ({ workspaceId }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatchT>();
 
   const { data: folders } = useQueryData({
     initialData: [],
