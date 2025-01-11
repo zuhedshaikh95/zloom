@@ -167,3 +167,111 @@ export const getWorkspaces = async () => {
     return { status: 400, workspaces: null };
   }
 };
+
+export const createWorkspace = async (workspaceName: string) => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return { status: false, message: "User not found!" };
+
+    const authorised = await db.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+      },
+    });
+
+    if (authorised && authorised.subscription?.plan === "PRO") {
+      const workspace = await db.user.update({
+        where: {
+          clerkId: user.id,
+        },
+        data: {
+          workspaces: {
+            create: {
+              name: workspaceName,
+              type: "PUBLIC",
+            },
+          },
+        },
+      });
+
+      return { status: !!workspace, message: "Workspace created!" };
+    }
+
+    return { status: false, message: "Unauthorized!" };
+  } catch (error: any) {
+    console.log("🔴 createWorkspace Error", error.message);
+    return { status: false, message: "Something went wrong!" };
+  }
+};
+
+export const createFolder = async (workspaceId: string, id: string) => {
+  try {
+    const isNewFolder = await db.folder.create({
+      data: {
+        id,
+        workspaceId,
+      },
+    });
+    return { status: true, message: "New folder created!" };
+  } catch (error: any) {
+    console.log("🔴 createFolder Error:", error.message);
+    return { status: false, message: "Something went wrong!" };
+  }
+};
+
+export const renameFolder = async (folderId: string, name: string) => {
+  try {
+    const folder = await db.folder.update({
+      where: {
+        id: folderId,
+      },
+      data: {
+        name,
+      },
+    });
+
+    if (folder) {
+      return { status: true, message: "Folder Renamed" };
+    }
+
+    return { status: false, message: "Folder does not exist" };
+  } catch (error: any) {
+    console.error("🔴 renameFolder Error:", error.message);
+    return { status: false, message: "Something went wrong" };
+  }
+};
+
+export const getFolderInfo = async (folderId: string) => {
+  try {
+    const folder = await db.folder.findUnique({
+      where: {
+        id: folderId,
+      },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            videos: true,
+          },
+        },
+      },
+    });
+
+    if (!folder) {
+      return { status: false, folder: null };
+    }
+
+    return { status: true, folder };
+  } catch (error: any) {
+    console.log("🔴 getFolderInfo Error:", error.message);
+    return { status: false, folder: null };
+  }
+};

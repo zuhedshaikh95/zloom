@@ -1,4 +1,7 @@
+import store from "@/redux/store";
+import { createWorkspaceValidator } from "@/validations";
 import { SUBSCRIPTION_PLAN } from "@prisma/client";
+import { z } from "zod";
 
 export enum QueryKeysE {
   WORKSPACE_VIDEOS = "workspace-videos",
@@ -33,3 +36,25 @@ export type SearchUsersT = {
   email: string;
   image: string | null;
 };
+
+export type CreateWorkspacePayloadT = z.infer<typeof createWorkspaceValidator>;
+
+export type WorkspaceVideoT = {
+  user: {
+    firstName: string | null;
+    lastName: string | null;
+    image: string | null;
+  } | null;
+  folder: {
+    id: string;
+    name: string;
+  } | null;
+  id: string;
+  title: string | null;
+  source: string;
+  createdAt: Date;
+  processing: boolean;
+};
+
+export type RootStateT = ReturnType<typeof store.getState>;
+export type AppDispatchT = typeof store.dispatch;
