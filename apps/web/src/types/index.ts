@@ -1,5 +1,5 @@
 import store from "@/redux/store";
-import { createWorkspaceValidator } from "@/validations";
+import { createCommentValidator, createWorkspaceValidator, moveVideoLocationValidator } from "@/validations";
 import { SUBSCRIPTION_PLAN } from "@prisma/client";
 import { z } from "zod";
 
@@ -38,6 +38,10 @@ export type SearchUsersT = {
 };
 
 export type CreateWorkspacePayloadT = z.infer<typeof createWorkspaceValidator>;
+
+export type MoveVideoLocationPayload = z.infer<typeof moveVideoLocationValidator>;
+
+export type CreateCommentPayloadT = z.infer<typeof createCommentValidator>;
 
 export type WorkspaceVideoT = {
   user: {
