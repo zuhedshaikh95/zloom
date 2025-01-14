@@ -2,6 +2,7 @@
 
 import { db } from "@/libs/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { sendEmail } from "./user";
 
 export const verifyAccessToWorkspace = async (workspaceId: string) => {
   try {
@@ -273,5 +274,145 @@ export const getFolderInfo = async (folderId: string) => {
   } catch (error: any) {
     console.log("🔴 getFolderInfo Error:", error.message);
     return { status: false, folder: null };
+  }
+};
+
+export const moveVideoLocation = async (videoId: string, workspaceId: string, folderId: string | null) => {
+  try {
+    const changeLocation = await db.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        folderId: folderId || null,
+        workspaceId,
+      },
+    });
+
+    return { status: true, message: "Folder changed!" };
+  } catch (error: any) {
+    console.log("🔴 moveVideoLocation Error:", error.message);
+    return { status: false, message: "Something went wrong!" };
+  }
+};
+
+export const getPreviewVideo = async (videoId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: false, video: null, author: false };
+
+    const video = await db.video.findUnique({
+      where: {
+        id: videoId,
+      },
+      select: {
+        title: true,
+        createdAt: true,
+        source: true,
+        description: true,
+        processing: true,
+        views: true,
+        summary: true,
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            image: true,
+            clerkId: true,
+            trial: true,
+            subscription: {
+              select: {
+                plan: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (video) {
+      return {
+        status: true,
+        video,
+        author: user.id === video.user?.clerkId,
+      };
+    }
+
+    return { status: false, video: null, author: false };
+  } catch (error: any) {
+    console.log("🔴 getPreviewVideo Error:", error.message);
+    return { status: false, video: null, author: false };
+  }
+};
+
+export const sendEmailForFirstView = async (videoId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: false, message: "Unauthorized!" };
+
+    const video = await db.video.findUnique({
+      where: {
+        id: videoId,
+      },
+      select: {
+        title: true,
+        views: true,
+        user: {
+          select: {
+            email: true,
+            firstView: true,
+            clerkId: true,
+          },
+        },
+      },
+    });
+
+    if (!video) return { status: false, message: "Video not found!" };
+
+    if (!video.user?.firstView) return { status: false, message: "Firstview has not been enabled by owner1!" };
+
+    if (video.views === 0) {
+      await db.video.update({
+        where: {
+          id: videoId,
+        },
+        data: {
+          views: {
+            increment: 1,
+          },
+        },
+      });
+
+      const { mailOptions, transporter } = await sendEmail(
+        video.user?.email!,
+        "Zloom - You've got a viewer",
+        `Your video ${video.title} just got its first viewer`
+      );
+
+      transporter.sendMail(mailOptions, async (error, info) => {
+        if (error) {
+          console.log(error.message);
+          return { status: false, message: "Something went wrong while sending email!" };
+        }
+
+        const notification = await db.user.update({
+          where: {
+            clerkId: user.id,
+          },
+          data: {
+            notifications: {
+              create: {
+                content: mailOptions.text,
+              },
+            },
+          },
+        });
+
+        return { status: true, message: "Notification created!" };
+      });
+    }
+  } catch (error: any) {
+    console.log("🔴 sendEmailForFirstView Error:", error.message);
+    return { status: false, video: null, author: false };
   }
 };
