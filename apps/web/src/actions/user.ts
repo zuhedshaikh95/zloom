@@ -239,3 +239,105 @@ export const inviteMemberToWorkspace = async (workspaceId: string, receiverId: s
     return { status: false, message: error.message };
   }
 };
+
+export const getUserProfile = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: false, user: null };
+
+    const profileIdAndImage = await db.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        image: true,
+        id: true,
+      },
+    });
+
+    return { status: !!profileIdAndImage, user: profileIdAndImage };
+  } catch (error: any) {
+    console.log("🔴 getUserProfile Error:", error.message);
+    return { status: false, user: null };
+  }
+};
+
+export const postCommentAndReply = async ({
+  commentText,
+  userId,
+  videoId,
+  commentId,
+}: {
+  userId: string;
+  commentText: string;
+  videoId: string;
+  commentId?: string;
+}) => {
+  try {
+    if (commentId) {
+      const reply = await db.comment.update({
+        where: {
+          id: commentId,
+        },
+        data: {
+          replies: {
+            create: {
+              commentText,
+              userId,
+              videoId,
+            },
+          },
+        },
+      });
+
+      if (reply) {
+        return { status: true, message: "Reply posted!" };
+      }
+    }
+
+    const comment = await db.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        comments: {
+          create: {
+            commentText,
+            userId,
+          },
+        },
+      },
+    });
+
+    return { status: true, message: "Comment posted!" };
+  } catch (error: any) {
+    console.log("🔴 postCommentAndReply Error:", error.message);
+    return { status: false, message: error.message };
+  }
+};
+
+export const getVideoComments = async (videoId: string) => {
+  try {
+    const comments = await db.comment.findMany({
+      where: {
+        OR: [{ videoId }, { commentId: videoId }],
+        commentId: null,
+      },
+      include: {
+        replies: {
+          include: {
+            user: true,
+          },
+        },
+        user: true,
+      },
+    });
+
+    if (comments) return { status: true, comments: comments };
+
+    return { status: true, comments: [] };
+  } catch (error: any) {
+    console.log("🔴 getVideoComments Error:", error.message);
+    return { status: false, comments: [] };
+  }
+};
