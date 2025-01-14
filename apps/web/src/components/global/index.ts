@@ -5,3 +5,5 @@ export { default as Sidebar } from "./sidebar";
 export { default as WorkspaceSearch } from "./workspace-search";
 export { default as SidebarItem } from "./sidebar-item";
 export { default as CreateWorkspace } from "./create-workspace";
+export { default as CommentCard } from "./comment-card";
+export { default as CommentForm } from "./comment-form";
