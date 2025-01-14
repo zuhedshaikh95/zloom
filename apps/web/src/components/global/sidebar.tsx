@@ -5,7 +5,8 @@ import { getWorkspaces } from "@/actions/workspace";
 import { SidebarItem, WorkspaceSearch } from "@/components/global";
 import { Button, Card, Dialog, Select, Separator, Sheet } from "@/components/ui";
 import { mapWorkspaceMenuItems } from "@/constants";
-import { useQueryData } from "@/hooks";
+import { useAppDispatch, useQueryData } from "@/hooks";
+import { setWorkspaces } from "@/redux/features/workspaces-slice";
 import { QueryKeysE } from "@/types";
 import { MenuIcon, PlusCircleIcon } from "lucide-react";
 import Image from "next/image";
@@ -17,13 +18,15 @@ type Props = {
 };
 
 const Sidebar: React.FC<Props> = ({ workspaceId }) => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const pathName = usePathname();
 
-  const { data, isFetched } = useQueryData({
+  const { data } = useQueryData({
     queryKey: [QueryKeysE.WORKSPACES],
     queryFn: async () => {
       const { workspaces } = await getWorkspaces();
+      if (workspaces) dispatch(setWorkspaces({ workspaces: workspaces.workspaces }));
       return workspaces;
     },
   });
