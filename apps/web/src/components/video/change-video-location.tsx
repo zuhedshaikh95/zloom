@@ -2,11 +2,11 @@
 
 import { getWorkspacesFolders, moveVideoLocation } from "@/actions/workspace";
 import { Button, Label, Select, Separator, Skeleton } from "@/components/ui";
-import { useQueryData } from "@/hooks";
+import { useMutationData, useQueryData } from "@/hooks";
 import { MoveVideoLocationPayload, MutationKeysE, QueryKeysE, RootStateT } from "@/types";
 import { moveVideoLocationValidator } from "@/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import React from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -29,7 +29,7 @@ const ChangeVideoLocation: React.FC<Props> = ({ videoId, folderId, workspaceId }
   const folder = folders.find((folder) => folder.id === folderId);
   const workspace = workspaces.find((workspace) => workspace.id === workspaceId);
 
-  const { mutate, isPending } = useMutation<boolean, string, { folderId: string | null; workspaceId: string }>({
+  const { mutate, isPending } = useMutationData<boolean, string, { folderId: string | null; workspaceId: string }>({
     mutationKey: [MutationKeysE.CHANGE_VIDEO_LOCATION],
     mutationFn: async ({ folderId, workspaceId }) => {
       const { status, message } = await moveVideoLocation(videoId, workspaceId, folderId);

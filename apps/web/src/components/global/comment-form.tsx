@@ -2,12 +2,12 @@
 
 import { getUserProfile, postCommentAndReply } from "@/actions/user";
 import { Button, Input } from "@/components/ui";
-import { useQueryData } from "@/hooks";
+import { useMutationData, useQueryData } from "@/hooks";
 import { CreateCommentPayloadT, MutationKeysE, QueryKeysE } from "@/types";
 import { createCommentValidator } from "@/validations";
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { LoaderCircleIcon, SendIcon } from "lucide-react";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -31,7 +31,7 @@ const CommentForm: React.FC<Props> = ({ authorName, videoId, close, commentId })
     },
   });
 
-  const { mutate, isPending } = useMutation<
+  const { mutate, isPending } = useMutationData<
     boolean,
     string,
     { userId: string; commentText: string; videoId: string; commentId?: string }
