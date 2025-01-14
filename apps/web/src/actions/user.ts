@@ -341,3 +341,132 @@ export const getVideoComments = async (videoId: string) => {
     return { status: false, comments: [] };
   }
 };
+
+export const acceptInvite = async (inviteId: string) => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return { status: false, message: "Unauthorized!", code: 404 };
+
+    const invitation = await db.invite.findUnique({
+      where: {
+        id: inviteId,
+      },
+      select: {
+        workspaceId: true,
+        reciever: {
+          select: {
+            clerkId: true,
+          },
+        },
+      },
+    });
+
+    if (user.id !== invitation?.reciever?.clerkId) return { status: false, message: "Unauthorized access!", code: 401 };
+
+    const acceptInvite = db.invite.update({
+      where: {
+        id: inviteId,
+      },
+      data: {
+        accepted: true,
+      },
+    });
+
+    const updateMember = db.user.update({
+      where: {
+        clerkId: user.id,
+      },
+      data: {
+        members: {
+          create: {
+            workspaceId: invitation.workspaceId,
+          },
+        },
+      },
+    });
+
+    const memberTransaction = await db.$transaction([acceptInvite, updateMember]);
+
+    if (memberTransaction.length) return { status: true, message: "Invite accepted!", code: 200 };
+
+    return { status: false, message: "Transaction failed!", code: 400 };
+  } catch (error: any) {
+    console.log("🔴 acceptInvite Error:", error.message);
+    return { status: false, message: error.message, code: 500 };
+  }
+};
+
+export const getFirstView = async () => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return { status: false };
+
+    const data = await db.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        firstView: true,
+      },
+    });
+
+    return { status: !!data, view: !!data?.firstView };
+  } catch (error: any) {
+    console.log("🔴 getFirstView Error:", error.message);
+    return { status: false };
+  }
+};
+
+export const enableFirstView = async (enabled: boolean) => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return { status: false, view: null };
+
+    const data = await db.user.update({
+      where: {
+        clerkId: user.id,
+      },
+      data: {
+        firstView: enabled,
+      },
+    });
+
+    if (data.firstView) {
+      return { status: !!data, message: "You will be notified on every view of your recordings", view: data };
+    }
+
+    return { status: !!data, message: "Notifications have been turned off ", view: data };
+  } catch (error: any) {
+    console.log("🔴 enableFirstView Error:", error.message);
+    return { status: false, view: null };
+  }
+};
+
+export const getPaymentInfo = async () => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return { status: false, payment: null };
+
+    const payment = await db.user.findUnique({
+      where: {
+        clerkId: user.id,
+      },
+      select: {
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+      },
+    });
+
+    return { status: !!payment, payment };
+  } catch (error: any) {
+    console.log("🔴 getPaymentInfo Error:", error.message);
+    return { status: false, payment: null };
+  }
+};
