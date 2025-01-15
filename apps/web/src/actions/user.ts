@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/libs/prisma";
+import { stripe } from "@/libs/stripe";
 import { currentUser } from "@clerk/nextjs/server";
 import nodemailer from "nodemailer";
 
@@ -468,5 +469,38 @@ export const getPaymentInfo = async () => {
   } catch (error: any) {
     console.log("🔴 getPaymentInfo Error:", error.message);
     return { status: false, payment: null };
+  }
+};
+
+export const completeSubscription = async (session_id: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: false, message: "Unauthorized!" };
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (session) {
+      const customer = await db.user.update({
+        where: {
+          clerkId: user.id,
+        },
+        data: {
+          subscription: {
+            update: {
+              data: {
+                customerId: session.customer as string,
+                plan: "PRO",
+              },
+            },
+          },
+        },
+      });
+
+      return { status: true, message: "Subscribed to Pro! Have fun recording more videos" };
+    }
+
+    return { status: false, message: "Invalid checkout session!" };
+  } catch (error: any) {
+    console.log("🔴 completeSubscription Error:", error.message);
+    return { status: false, message: error.message };
   }
 };
