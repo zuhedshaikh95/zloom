@@ -2,16 +2,18 @@
 
 import { getNotifications } from "@/actions/user";
 import { getWorkspaces } from "@/actions/workspace";
-import { SidebarItem, WorkspaceSearch } from "@/components/global";
+import { Loader, SidebarItem, WorkspaceSearch } from "@/components/global";
 import { Button, Card, Dialog, Select, Separator, Sheet } from "@/components/ui";
 import { mapWorkspaceMenuItems } from "@/constants";
-import { useAppDispatch, useQueryData } from "@/hooks";
+import { useAppDispatch, useMutationData, useQueryData } from "@/hooks";
 import { setWorkspaces } from "@/redux/features/workspaces-slice";
-import { QueryKeysE } from "@/types";
+import { MutationKeysE, QueryKeysE } from "@/types";
 import { MenuIcon, PlusCircleIcon } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useMemo } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 
 type Props = {
   workspaceId: string;
@@ -39,9 +41,25 @@ const Sidebar: React.FC<Props> = ({ workspaceId }) => {
     },
   });
 
+  const { mutate, isPending } = useMutationData<{ status: boolean; session_url?: string }, Error>({
+    mutationKey: [MutationKeysE.CREATE_SUBSCRIPTION],
+    mutationFn: async () => {
+      const response = await axios.get<{ status: boolean; session_url?: string }>("/api/payment");
+      return response.data;
+    },
+    onSuccess: (response) => {
+      return (window.location.href = `${response.session_url}`);
+    },
+    onError: (error) => {
+      toast(error.message);
+    },
+  });
+
   const workspace = useMemo(() => data?.workspaces?.find((workspace) => workspace.id === workspaceId), [data]);
 
   const onWorkspaceChange = (id: string) => router.push(`/dashboard/${id}`);
+
+  const handleSubscriptionPayment = () => mutate();
 
   const SidebarContent = (
     <div className="bg-[#111111] flex-none relative p-4 h-full w-[250px] flex flex-col gap-2 items-center overflow-hidden">
@@ -148,11 +166,10 @@ const Sidebar: React.FC<Props> = ({ workspaceId }) => {
             </Card.Description>
           </Card.Header>
 
-          {/* TODO: Payment for Upgrade */}
           <Card.Footer className="mt-4">
-            {/* <Button className="text-sm w-full" onClick={handleSubscriptionPayment}>
-              {isPending ? <LoaderCircleIcon className="inline w-8 h-8 animate-spin text-yellow-400 " /> : "Upgrade"}
-            </Button> */}
+            <Button className="text-sm w-full" onClick={handleSubscriptionPayment} disabled={isPending}>
+              {isPending ? <Loader className="w-8 h-8" /> : "Upgrade"}
+            </Button>
           </Card.Footer>
         </Card.Root>
       )}
