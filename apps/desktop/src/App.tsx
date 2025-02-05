@@ -13,7 +13,6 @@ function App() {
       <ControlLayout>
         <AuthButton />
         <Widget />
-        <div>Hello, topper!</div>
       </ControlLayout>
     </QueryClientProvider>
   );
