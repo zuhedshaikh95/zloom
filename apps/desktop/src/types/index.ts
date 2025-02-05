@@ -1,27 +1,38 @@
-export type UserProfileT = Partial<{
+import { updateStudioSettingsValidator } from "@/validations";
+import { z } from "zod";
+
+export type UserProfileT = {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  createdAt: Date;
   clerkId: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
 
-  subscription?: {
+  subscription: {
     plan: "PRO" | "FREE";
   };
 
-  studio: Partial<{
-    id: string;
-    screen: string;
-    mic: string;
-    preset: "HD" | "SD";
-    camera: string;
-    userId: string;
-  }>;
-}>;
+  studio: StudioT;
+};
+
+export type StudioT = {
+  id: string;
+  screen: string | null;
+  mic: string | null;
+  preset: "HD" | "SD";
+  camera: string | null;
+  userId: string;
+};
 
 export enum QueryKeysE {
   USER_PROFILE = "user-profile",
+}
+
+export enum MutationKeysE {
+  UPDATE_STUDIO = "update-studio",
 }
 
 export type SourceDevicesStateT = {
@@ -41,3 +52,11 @@ export type SourceDevicesStateT = {
   error?: string | null;
   isPending?: boolean;
 };
+
+export type RouteReponseT<T = undefined> = {
+  status: boolean;
+  data: T;
+  message: string;
+};
+
+export type UpdateStudioSettingsFormT = z.infer<typeof updateStudioSettingsValidator>;
