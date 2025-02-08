@@ -18,7 +18,17 @@ export const getMediaSources = async () => {
 
   const audioInputs = enumratedDevices.filter((device) => device.kind === "audioinput");
 
-  console.log("getting sources");
-
   return { displays, audioInputs };
+};
+
+export const hidePluginWindow = (state?: boolean) => {
+  window.ipcRenderer.send("hide-plugin", { state });
+};
+
+export const videoRecordingTime = (ms: number) => {
+  const second = `${Math.floor((ms / 1000) % 60)}`.padStart(2, "0");
+  const minute = `${Math.floor((ms / 1000 / 60) % 60)}`.padStart(2, "0");
+  const hour = `${Math.floor(ms / 1000 / 60 / 60)}`.padStart(2, "0");
+
+  return { length: `${hour}:${minute}:${second}`, minute };
 };

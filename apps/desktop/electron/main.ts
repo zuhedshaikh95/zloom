@@ -48,7 +48,6 @@ function createWindow() {
 
   studio = new BrowserWindow({
     width: 400,
-    height: 50,
     minHeight: 70,
     maxHeight: 400,
     minWidth: 300,
@@ -159,7 +158,7 @@ ipcMain.on("resize-studio", (event, payload) => {
 });
 
 ipcMain.on("hide-plugin", (event, payload) => {
-  console.log("hide-plugin ✅");
+  console.log("hide-plugin fired");
   win?.webContents.send("hide-plugin", payload);
 });
 
