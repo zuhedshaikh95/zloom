@@ -62,7 +62,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-transparent text-foreground overflow-hidden;
   }
 }
 
@@ -85,4 +85,8 @@
 ::-webkit-scrollbar-thumb {
   background: gray;
   border-radius: 10px;
+}
+
+.debug {
+  @apply border-2 border-red-500;
 }

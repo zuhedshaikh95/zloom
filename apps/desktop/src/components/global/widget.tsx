@@ -1,8 +1,8 @@
-import { Loader } from "@/components/global";
+import { Loader, MediaConfiguration } from "@/components/global";
 import { useMediaSources } from "@/hooks";
 import { axiosInstance } from "@/libs/utils";
-import { QueryKeysE } from "@/types";
-import { ClerkLoading, useUser } from "@clerk/clerk-react";
+import { QueryKeysE, RouteReponseT, UserProfileT } from "@/types";
+import { ClerkLoading, SignedIn, useUser } from "@clerk/clerk-react";
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect } from "react";
 
@@ -10,22 +10,21 @@ type Props = {};
 
 const Widget: React.FC<Props> = ({}) => {
   const { user } = useUser();
-  console.log({ user });
 
-  const { data: profile } = useQuery({
+  const { data: profile, refetch } = useQuery({
     queryKey: [QueryKeysE.USER_PROFILE],
+    enabled: false,
     queryFn: async () => {
-      const response = await axiosInstance.get(`/auth/${user?.id}`);
+      const response = await axiosInstance.get<RouteReponseT<UserProfileT>>(`/api/auth/${user?.id}`);
 
-      return response.data;
+      return response.data.data;
     },
   });
 
-  const { fetchMediaSources, state } = useMediaSources();
+  const { state, fetchMediaSources } = useMediaSources();
 
   useEffect(() => {
-    if (user && user.id) {
-    }
+    if (user) refetch(), fetchMediaSources();
   }, [user]);
 
   return (
@@ -36,11 +35,15 @@ const Widget: React.FC<Props> = ({}) => {
         </div>
       </ClerkLoading>
 
-      {/* <SignedIn>
-        {profile ? <MediaConfiguration /> : <div className="w-full h-full flex justify-center items-center">
-          <Loader className="text-white" />
-          </div>}
-      </SignedIn> */}
+      <SignedIn>
+        {profile ? (
+          <MediaConfiguration state={state} user={profile} />
+        ) : (
+          <div className="w-full h-full flex justify-center items-center">
+            <Loader />
+          </div>
+        )}
+      </SignedIn>
     </div>
   );
 };
