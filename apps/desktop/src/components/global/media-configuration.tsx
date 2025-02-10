@@ -1,7 +1,14 @@
 import { Loader } from "@/components/global";
 import { Select } from "@/components/ui";
 import { axiosInstance } from "@/libs/utils";
-import { MutationKeysE, RouteReponseT, SourceDevicesStateT, UpdateStudioSettingsFormT, UserProfileT } from "@/types";
+import {
+  MutationKeysE,
+  RouteReponseT,
+  SourceDevicesStateT,
+  StudioT,
+  UpdateStudioSettingsFormT,
+  UserProfileT,
+} from "@/types";
 import { updateStudioSettingsValidator } from "@/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -26,17 +33,19 @@ const MediaConfiguration: React.FC<Props> = ({ state, user }) => {
   );
 
   const { mutate, isPending } = useMutation<
-    any,
+    RouteReponseT<StudioT>,
     RouteReponseT<null>,
     Partial<UpdateStudioSettingsFormT & { id: string }>
   >({
     mutationKey: [MutationKeysE.UPDATE_STUDIO],
     mutationFn: async (values) => {
       const response = await axiosInstance.post<RouteReponseT<any>>(`/api/studio/${user.id}`, values);
-      return response.data.data;
+      return response.data;
     },
     onSuccess: (data) => {
-      toast("Updated!");
+      toast("Success!", {
+        description: data.message,
+      });
     },
     onError: (error) => {
       toast("Something went wrong!", {
