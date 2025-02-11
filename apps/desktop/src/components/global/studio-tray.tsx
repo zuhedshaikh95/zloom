@@ -1,4 +1,4 @@
-import { startRecording, stopRecording } from "@/libs/recorder";
+import { selectSources, startRecording, stopMediaRecorder, stopRecording } from "@/libs/recorder";
 import { cn, videoRecordingTime } from "@/libs/utils";
 import { StudioT } from "@/types";
 import { CastIcon, PauseIcon, SquareIcon } from "lucide-react";
@@ -32,7 +32,7 @@ const StudioTray: React.FC<Props> = () => {
       const recordingTime = videoRecordingTime(time);
 
       if (sources?.plan === "FREE" && recordingTime.minute === "05") {
-        setRecording(false), clearTimer(), stopRecording();
+        setRecording(false), clearTimer(), stopMediaRecorder();
       }
 
       setTimer(recordingTime.length);
@@ -48,6 +48,23 @@ const StudioTray: React.FC<Props> = () => {
     };
   }, [recording]);
 
+  useEffect(() => {
+    if (sources) {
+      selectSources(
+        { id: sources?.id!, mic: sources?.mic!, preset: sources?.preset!, screen: sources?.screen! },
+        videoRef
+      );
+    }
+
+    return () => {
+      if (sources)
+        selectSources(
+          { id: sources?.id!, mic: sources?.mic!, preset: sources?.preset!, screen: sources?.screen! },
+          videoRef
+        );
+    };
+  }, [sources]);
+
   const clearTimer = () => {
     setTimer("00:00:00");
     setCount(0);
@@ -59,7 +76,7 @@ const StudioTray: React.FC<Props> = () => {
 
   return (
     <div className="flex flex-col justify-end gap-y-5">
-      <video className={cn("w-6/12 border-2 self-end bg-white", { hidden: preview })} ref={videoRef} autoPlay />
+      <video className={cn("w-full border-2 self-end bg-white", { hidden: preview })} ref={videoRef} autoPlay />
 
       <div className="rounded-full flex justify-around items-center h-16 w-full border-2 bg-[#171717] draggable border-white/40">
         <div
