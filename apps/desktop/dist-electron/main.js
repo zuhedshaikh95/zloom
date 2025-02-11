@@ -48,12 +48,12 @@ function createWindow() {
     }
   });
   webcam = new BrowserWindow({
-    width: 400,
-    height: 200,
-    minHeight: 70,
-    maxHeight: 400,
-    minWidth: 300,
-    maxWidth: 400,
+    width: 100,
+    height: 100,
+    minHeight: 200,
+    maxHeight: 200,
+    minWidth: 200,
+    maxWidth: 200,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
@@ -70,6 +70,8 @@ function createWindow() {
   win.setAlwaysOnTop(true, "screen-saver", 1);
   studio.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   studio.setAlwaysOnTop(true, "screen-saver", 1);
+  webcam.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  webcam.setAlwaysOnTop(true, "screen-saver", 1);
   win.webContents.on("did-finish-load", () => {
     win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
   });
@@ -125,6 +127,7 @@ ipcMain.on("resize-studio", (event, payload) => {
 });
 ipcMain.on("hide-plugin", (event, payload) => {
   console.log("hide-plugin fired");
+  console.log({ payload });
   win == null ? void 0 : win.webContents.send("hide-plugin", payload);
 });
 app.on("activate", () => {

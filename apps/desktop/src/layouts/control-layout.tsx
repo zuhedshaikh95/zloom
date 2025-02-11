@@ -12,7 +12,6 @@ const ControlLayout: React.FC<Props> = ({ children, className }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   window.ipcRenderer.on("hide-plugin", (event, payload) => {
-    console.log({ hidePluginEvent: event });
     setIsVisible(payload.state);
   });
 
