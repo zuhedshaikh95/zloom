@@ -16,6 +16,7 @@ export const startRecording = (source: StudioT) => {
 
 export const stopRecording = () => {
   hidePluginWindow(false);
+  stopMediaRecorder();
   socket.emit("process-video", {
     fileName: videoTransferFileName,
     userId,

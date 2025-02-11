@@ -1,4 +1,4 @@
-import { selectSources, startRecording, stopMediaRecorder } from "@/libs/recorder";
+import { selectSources, startRecording, stopMediaRecorder, stopRecording } from "@/libs/recorder";
 import { cn, videoRecordingTime } from "@/libs/utils";
 import { StudioT } from "@/types";
 import { CastIcon, PauseIcon, SquareIcon } from "lucide-react";
@@ -104,7 +104,7 @@ const StudioTray: React.FC<Props> = () => {
             className="non-draggable cursor-pointer hover:scale-110 transform transition duration-150"
             fill="#ffffff"
             onClick={() => {
-              setRecording(false), clearTimer(), stopMediaRecorder();
+              setRecording(false), clearTimer(), stopRecording();
             }}
           />
         )}
