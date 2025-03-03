@@ -72,8 +72,9 @@ export const selectSources = async (
   const combinedStream = new MediaStream(stream.getTracks().concat(audioStream.getTracks()));
 
   mediaRecorder = new MediaRecorder(combinedStream, {
-    mimeType: "video/webm; codesc=vp9",
+    mimeType: "video/webm;codecs=vp9",
   });
 
   mediaRecorder.ondataavailable = dataAvailable;
+  mediaRecorder.onstop = stopRecording;
 };
