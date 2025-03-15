@@ -1,5 +1,5 @@
 export type RouteReponseT<T = undefined> = {
-  status: boolean;
+  success: boolean;
   data: T;
   message: string;
 };

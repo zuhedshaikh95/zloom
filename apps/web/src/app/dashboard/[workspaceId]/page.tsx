@@ -1,6 +1,7 @@
 import { CreateFolder, MyFolders } from "@/components/folder";
 import { CreateWorkspace } from "@/components/global";
 import { Tabs } from "@/components/ui";
+import { Videos } from "@/components/video";
 import React from "react";
 
 type Props = {
@@ -19,8 +20,8 @@ const Workspace: React.FC<Props> = async ({ params }) => {
               Videos
             </Tabs.Trigger>
 
-            <Tabs.Trigger className="p-2 px-5 rounded-full data-[state=active]:bg-[#252525]" value="archive">
-              Archive
+            <Tabs.Trigger className="p-2 px-5 rounded-full data-[state=active]:bg-[#252525]" value="folders">
+              Folders
             </Tabs.Trigger>
           </Tabs.List>
 
@@ -32,9 +33,12 @@ const Workspace: React.FC<Props> = async ({ params }) => {
 
         <section className="py-9">
           <Tabs.Content value="videos">
+            <Videos workspaceId={params.workspaceId} />
+          </Tabs.Content>
+
+          <Tabs.Content value="folders">
             <MyFolders workspaceId={params.workspaceId} />
           </Tabs.Content>
-          <Tabs.Content value="archive">Archive</Tabs.Content>
         </section>
       </Tabs.Root>
     </div>

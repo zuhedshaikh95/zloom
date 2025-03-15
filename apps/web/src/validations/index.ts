@@ -12,3 +12,10 @@ export const moveVideoLocationValidator = z.object({
 export const createCommentValidator = z.object({
   commentText: z.string().min(1, { message: "Too short!" }),
 });
+
+export const editVideoInfoValidator = z.object({
+  title: z.string().min(5, { message: "Too short!" }),
+  description: z.string().min(30, {
+    message: "Too short! Description must have at least 30 characters",
+  }),
+});

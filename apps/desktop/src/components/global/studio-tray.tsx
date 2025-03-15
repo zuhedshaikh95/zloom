@@ -1,4 +1,4 @@
-import { selectSources, startRecording, stopMediaRecorder, stopRecording } from "@/libs/recorder";
+import { selectSources, startRecording, stopMediaRecorder } from "@/libs/recorder";
 import { cn, videoRecordingTime } from "@/libs/utils";
 import { StudioT } from "@/types";
 import { CastIcon, PauseIcon, SquareIcon } from "lucide-react";
@@ -17,7 +17,7 @@ const StudioTray: React.FC<Props> = () => {
   const [timer, setTimer] = useState("00:00:00");
 
   useEffect(() => {
-    window.ipcRenderer.on("profile-received", (event, payload) => {
+    window.ipcRenderer.on("profile-received", (_, payload) => {
       console.log("profile-received fired");
       setSources(payload);
     });
@@ -103,9 +103,7 @@ const StudioTray: React.FC<Props> = () => {
             size={32}
             className="non-draggable cursor-pointer hover:scale-110 transform transition duration-150"
             fill="#ffffff"
-            onClick={() => {
-              setRecording(false), clearTimer(), stopRecording();
-            }}
+            onClick={() => (setRecording(false), clearTimer(), stopMediaRecorder())}
           />
         )}
 

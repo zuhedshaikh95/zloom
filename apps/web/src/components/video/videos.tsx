@@ -5,11 +5,11 @@ import { VideoCard } from "@/components/video";
 import { useQueryData } from "@/hooks";
 import { cn } from "@/libs/utils";
 import { QueryKeysE } from "@/types";
-import { Video } from "lucide-react";
+import { VideoIcon } from "lucide-react";
 import React from "react";
 
 type Props = {
-  folderId: string;
+  folderId?: string;
   workspaceId: string;
 };
 
@@ -18,18 +18,16 @@ const Videos: React.FC<Props> = ({ folderId, workspaceId }) => {
     initialData: [],
     queryKey: [QueryKeysE.WORKSPACE_VIDEOS],
     queryFn: async () => {
-      const { videos } = await getWorkspacesVideos(folderId);
+      const { videos } = await getWorkspacesVideos(folderId ?? workspaceId);
       return videos;
     },
   });
 
-  // TODO: add videos
-
   return (
-    <div className="flex flex-col gap-4 mt-4">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Video size={22} color="#545454" fill="#545454" />
+          <VideoIcon size={22} color="#707070" />
           <h2 className="text-[#BDBDBD] text-lg">Videos</h2>
         </div>
       </div>
