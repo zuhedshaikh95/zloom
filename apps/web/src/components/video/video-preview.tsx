@@ -2,13 +2,14 @@
 
 import { getPreviewVideo, sendEmailForFirstView } from "@/actions/workspace";
 import { Button, Tabs } from "@/components/ui";
-import { AiTools, CopyLink, RichLink, VideoActivities, VideoTranscript } from "@/components/video";
+import { AiTools, CopyLink, EditVideoInfo, RichLink, VideoActivities, VideoTranscript } from "@/components/video";
 import { useQueryData } from "@/hooks";
 import { QueryKeysE } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { Download } from "lucide-react";
 import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
+import { ErrorMessage } from "@hookform/error-message";
 
 type Props = {
   videoId: string;
@@ -33,8 +34,6 @@ const VideoPreview: React.FC<Props> = ({ videoId }) => {
 
   const notifyFirstView = async () => await sendEmailForFirstView(videoId);
 
-  // TODO: setup notify first view
-
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 lg:px-20 lg:py-10 overflow-y-auto gap-5">
       <div className="flex flex-col lg:col-span-2 gap-y-10">
@@ -42,11 +41,11 @@ const VideoPreview: React.FC<Props> = ({ videoId }) => {
           <div className="flex gap-x-5 items-start justify-between">
             <h2 className="text-white text-4xl font-bold">{data?.video?.title}</h2>
 
-            {/* {data?.author ? (
-              <EditVideo videoId={videoId} title={data.video?.title!} description={data.video?.description!} />
+            {data?.author ? (
+              <EditVideoInfo videoId={videoId} title={data.video?.title!} description={data.video?.description!} />
             ) : (
               <></>
-            )} */}
+            )}
           </div>
 
           <span className="flex gap-x-3 mt-2">
@@ -65,11 +64,11 @@ const VideoPreview: React.FC<Props> = ({ videoId }) => {
         <div className="flex flex-col text-2xl gap-y-4">
           <div className="flex gap-x-5 items-center justify-between">
             <p className="text-[#BDBDBD] font-semibold">Description</p>
-            {/* {data?.author ? (
-              <EditVideo videoId={videoId} title={data.video?.title!} description={data.video?.description!} />
-              ) : (
-                <></>
-                )} */}
+            {data?.author ? (
+              <EditVideoInfo videoId={videoId} title={data.video?.title!} description={data.video?.description!} />
+            ) : (
+              <></>
+            )}
           </div>
           <p className="text-[#D9D9D9] text-lg font-medium">{data?.video?.description}</p>
         </div>
@@ -78,7 +77,7 @@ const VideoPreview: React.FC<Props> = ({ videoId }) => {
       <div className="lg:col-span-1 flex flex-col gap-y-16">
         <div className="flex justify-end gap-x-3 items-center">
           <RichLink
-            description={data?.video?.description!}
+            description={data?.video?.summary!}
             videoId={videoId}
             source={data?.video?.source!}
             title={data?.video?.title!}

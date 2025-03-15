@@ -1,5 +1,10 @@
 import store from "@/redux/store";
-import { createCommentValidator, createWorkspaceValidator, moveVideoLocationValidator } from "@/validations";
+import {
+  createCommentValidator,
+  createWorkspaceValidator,
+  editVideoInfoValidator,
+  moveVideoLocationValidator,
+} from "@/validations";
 import { SUBSCRIPTION_PLAN } from "@prisma/client";
 import { z } from "zod";
 
@@ -24,6 +29,7 @@ export enum MutationKeysE {
   NEW_COMMENT = "new-comment",
   INVITE_MEMBER = "invite-member",
   CREATE_SUBSCRIPTION = "create-subscription",
+  EDIT_VIDEO = "edit-video",
 }
 
 export type SearchUsersT = {
@@ -62,3 +68,5 @@ export type WorkspaceVideoT = {
 
 export type RootStateT = ReturnType<typeof store.getState>;
 export type AppDispatchT = typeof store.dispatch;
+
+export type EditVideoInfoPayloadT = z.infer<typeof editVideoInfoValidator>;

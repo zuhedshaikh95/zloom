@@ -45,11 +45,6 @@ const MyFolders: React.FC<Props> = ({ workspaceId }) => {
           <Folders size={22} color="#707070" />
           <h2 className="text-[#BDBDBD] text-lg">Folders</h2>
         </div>
-
-        <div className="flex items-center gap-2">
-          <p className="text-[#BDBDBD] text-sm">More</p>
-          <ArrowRight size={22} color="#707070" />
-        </div>
       </div>
 
       <section className="flex items-center gap-4 p-4 overflow-x-auto w-full !scrollbar-thin !scrollbar-track-neutral-800 scrollbar-thumb-neutral-700">
